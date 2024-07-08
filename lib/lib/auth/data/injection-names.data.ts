@@ -1,0 +1,1 @@
+export const SECRET_PROVIDER_NAME = 'SECRET'

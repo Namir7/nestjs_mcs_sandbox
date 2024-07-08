@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum NotificationType {
+  SYSTEM
+  SUBSCRIPTION
+  COURSE
+  HOMEWORKS
+  BILLING
+  AFFIILIATE
+  CHAT
+}
+
+model Notification {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId   String
+  schoolId Int
+
+  text   String
+  type   NotificationType
+  action String
+  viewed Boolean          @default(false)
+  meta   NotificationMeta
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, schoolId])
+  @@index([viewed, createdAt])
+  @@map("notifications")
+}
+
+type NotificationMeta {
+  image String?
+
+  userId     String?
+  userEmail  String?
+  courseId   Int?
+  moduleId   Int?
+  lessonId   Int?
+  homeworkId Int?
+  webinarId  Int?
+
+  // ?
+  messageId     Int?
+  transactionId Int?
+}
+
+model NotificationsSettings {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String
+  schoolId Int
+
+  sound String?
+
+  platform Int[]
+  browser  Int[]
+  mobile   Int[]
+  telegram Int[]
+  email    Int[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, schoolId])
+  @@map("notifications_settings")
+}

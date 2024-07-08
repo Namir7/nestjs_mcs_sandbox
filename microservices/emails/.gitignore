@@ -1,0 +1,8 @@
+out
+dist
+build
+.react-email
+
+node_modules
+
+.env

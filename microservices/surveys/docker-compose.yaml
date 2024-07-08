@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/dev.dockerfile
+    container_name: surveys-service-app
+    hostname: surveys-service-app
+    volumes:
+      - ./:/app
+    ports:
+      - 3002:3002
+    depends_on:
+      - postgres
+    networks:
+      - skufspace-network
+    environment:
+      - DATABASE_URL=postgresql://surveys:surveys1234@surveys-service-db:5432/surveys
+
+  postgres:
+    image: postgres:14.3-alpine
+    container_name: surveys-service-db
+    hostname: surveys-service-db
+    volumes:
+      - .data/postgres:/var/lib/postgresql/data
+    networks:
+      - skufspace-network
+    ports:
+      - 5002:5432
+    environment:
+      POSTGRES_USER: surveys
+      POSTGRES_PASSWORD: surveys1234
+      POSTGRES_DB: surveys
+      PGDATA: /var/lib/postgresql/data
+
+networks:
+  skufspace-network:
+    external: true

@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/dev.dockerfile
+    container_name: gateway-service-app
+    hostname: gateway-service-app
+    volumes:
+      - ./:/app
+    ports:
+      - 3000:3000
+    networks:
+      - skufspace-network
+    environment:
+      - GQL_NOTIFICATIONS_SERVICE_URL=http://notifications-service-app:3001/graphql
+      - GQL_SURVEYS_SERVICE_URL=http://surveys-service-app:3002/graphql
+
+networks:
+  skufspace-network:
+    external: true

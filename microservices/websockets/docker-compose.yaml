@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/dev.dockerfile
+    container_name: websockets-service-app
+    hostname: websockets-service-app
+    volumes:
+      - ./:/app
+    ports:
+      - 3003:3003
+    networks:
+      - skufspace-network
+    environment:
+      - PORT=3003
+      - WS_COMPRESSION_ENABLED=false
+      - WS_IDLE_TIMEOUT_IN_SEC=60
+      - JWT_SECRET=secret
+      - INTERAPP_TOKEN=interapp_token
+
+networks:
+  skufspace-network:
+    external: true

@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/dev.dockerfile
+    container_name: notifications-service-app
+    hostname: notifications-service-app
+    volumes:
+      - ./:/app
+    ports:
+      - 3001:3001
+    depends_on:
+      - mongo
+    networks:
+      - skufspace-network
+    environment:
+      - APP_PORT=3001
+      - RMQ_URL=amqp://skufspace-rmq:5672
+      - RMQ_QUEUE=notifications
+      - WS_SERVICE_URL=http://websockets-service-app:3003
+      - EMAILS_SERVICE_URL=http://emails-service-app:3004
+      - JWT_SECRET=secret
+      - DATABASE_URL=mongodb://notifications-service-db:27017/notifications?directConnection=true
+      - INTERAPP_TOKEN=interapp_token
+      - AUTO_CLEAN_UP=false
+      - MAX_NOTIFICATIONS_PER_USER=1000
+      - CLEAN_UP_STEP=100
+
+  mongo:
+    image: mongo:7.0
+    container_name: notifications-service-db
+    hostname: notifications-service-db
+    command: ['--replSet', 'rs0', '--bind_ip_all']
+    volumes:
+      - .data/mongo:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+    networks:
+      - skufspace-network
+    ports:
+      - 5001:27017
+
+networks:
+  skufspace-network:
+    external: true
